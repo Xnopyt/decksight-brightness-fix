@@ -1,11 +1,11 @@
 {
-  "name": "Example Plugin",
-  "author": "John Doe",
+  "name": "Decksight Brightness Fix",
+  "author": "Xnopyt",
   "flags": ["debug", "_root"],
   "api_version": 1,
   "publish": {
     "tags": ["template", "root"],
-    "description": "Decky example plugin.",
+    "description": "A plugin to fix the brightness slider on Steam Decks with the DeckSight OLED panel",
     "image": "https://opengraph.githubassets.com/1/SteamDeckHomebrew/PluginLoader"
   }
 }
