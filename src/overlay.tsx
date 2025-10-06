@@ -7,7 +7,8 @@ import {
 } from "react";
 import {
     addEventListener,
-    removeEventListener
+    removeEventListener,
+    callable
 } from '@decky/api';
 
 enum UIComposition {
@@ -21,6 +22,8 @@ enum UIComposition {
 type UseUIComposition = (composition: UIComposition) => {
   releaseComposition: () => void;
 };
+
+const startMonitor = callable<[], void>("start_monitor");
 
 const useUIComposition: UseUIComposition = findModuleChild((m) => {
   if (typeof m !== "object") return undefined;
@@ -53,6 +56,8 @@ const [opacity, setOpacity] = useState(initialOpacity);
     };
 
     addEventListener("brightness_change", listener);
+    startMonitor()
+
     return () => {
       removeEventListener("brightness_change", listener);
     };

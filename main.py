@@ -1,4 +1,4 @@
-import decky, os, struct, ctypes, ctypes.util
+import decky, os, struct, ctypes, ctypes.util, asyncio
 class Plugin:
     async def _main(self):
         self.libc = ctypes.CDLL(ctypes.util.find_library("c"), use_errno=True)
@@ -15,10 +15,19 @@ class Plugin:
         self.max_path = '/sys/class/backlight/amdgpu_bl0/max_brightness'
         self.max_brightness = False
         
+        self.loop = asyncio.get_event_loop()
+        self.task = None
+        
     async def _unload(self):
         if self.fd:
             os.close(self.fd)
             self.fd = False
+            
+        if self.task:
+            self.task.cancel()
+
+    async def start_monitor(self):
+        self.task = self.loop.create_task(self.monitor())
         
     async def monitor(self):
         await self.sendBrightness()
