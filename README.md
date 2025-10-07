@@ -11,5 +11,3 @@ It works by monitoring `/sys/class/backlight/amdgpu_bl0/brightness` for changes 
 * In the Developer tab, select "Install Plugin from ZIP File"
 * Select the file you copied
 * The built-in brightness slider and auto brightness will work again
-
-Note: Similarly to the PWMLess-Brightness-Control plugin, the quick settings menu will always be at full brightness.   
