@@ -1,4 +1,4 @@
-import decky, os, struct, ctypes, ctypes.util, asyncio
+import decky, os, struct, ctypes, ctypes.util, asyncio, urllib.request, json
 class Plugin:
     async def _main(self):
         self.libc = ctypes.CDLL(ctypes.util.find_library("c"), use_errno=True)
@@ -18,6 +18,8 @@ class Plugin:
         self.loop = asyncio.get_event_loop()
         self.task = None
         
+        self.blacklistedTabs = ["SharedJSContext", "Steam Shared Context presented by Valve™", "Steam", "SP", "Steam Big Picture Mode"]
+        
     async def _unload(self):
         if self.fd:
             os.close(self.fd)
@@ -30,7 +32,7 @@ class Plugin:
         self.task = self.loop.create_task(self.monitor())
         
     async def monitor(self):
-        await self.sendBrightness()
+        await self.send_brightness()
         
         self.fd = self.libc.inotify_init()
         if self.fd < 0:
@@ -50,12 +52,29 @@ class Plugin:
                 offset += self.EVENT_SIZE
                 
                 if mask & self.IN_MODIFY:
-                    await self.sendBrightness()
+                    await self.send_brightness()
                         
-    async def sendBrightness(self):
+    async def send_brightness(self):
         if not self.max_brightness:
             with open(self.max_path, "r") as file:
                 self.max_brightness = int(file.read())
         
         with open(self.path, "r") as file:
-            await decky.emit('brightness_change', int(file.read()), self.max_brightness)
+            ratio = max(0, min(1, int(file.read()) / self.max_brightness))
+            brightness = pow(ratio, 0.7)
+            
+            tabs = self.get_tabs()
+            
+            await decky.emit('brightness_change', brightness, tabs)
+            
+    def get_tabs(self):
+        data = []
+        with urllib.request.urlopen('http://localhost:8080/json') as response:
+            data = json.loads(response.read())
+            
+        tabs = []
+        for tab in data:
+            if tab['title'] not in self.blacklistedTabs and tab['type'] == 'page':
+                tabs.append(tab['title'])
+                
+        return tabs

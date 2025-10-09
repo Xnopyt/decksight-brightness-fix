@@ -7,8 +7,7 @@ import {
 } from "react";
 import {
     addEventListener,
-    removeEventListener,
-    callable
+    removeEventListener
 } from '@decky/api';
 
 enum UIComposition {
@@ -22,8 +21,6 @@ enum UIComposition {
 type UseUIComposition = (composition: UIComposition) => {
   releaseComposition: () => void;
 };
-
-const startMonitor = callable<[], void>("start_monitor");
 
 const useUIComposition: UseUIComposition = findModuleChild((m) => {
   if (typeof m !== "object") return undefined;
@@ -49,14 +46,11 @@ const Overlay = ({ initialOpacity = 0, backgroundColor = 'black' }) => {
 const [opacity, setOpacity] = useState(initialOpacity);
 
   useEffect(() => {
-    const listener = (current: number, max: number) => {
-        const ratio = Math.max(0, Math.min(1, current / max))
-        const adjusted = Math.pow(ratio, 0.5)
-        setOpacity(Math.round((1 - adjusted) * 100) / 100)
+    const listener = (brightness: number) => {
+        setOpacity(Math.round((1 - brightness) * 100) / 100)
     };
 
     addEventListener("brightness_change", listener);
-    startMonitor()
 
     return () => {
       removeEventListener("brightness_change", listener);
