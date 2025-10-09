@@ -15,8 +15,8 @@ const startMonitor = callable<[], void>("start_monitor")
 let cleanupTabs: string[] = []
 
 const listener = (brightness: number, tabs: string[]) => {
+    cleanupTabs = tabs
     for (const tab of tabs) {
-      cleanupTabs = tabs
       executeInTab(tab, true, "document.children[0].style.filter = 'brightness(" + brightness + ")'")
     }
 }
