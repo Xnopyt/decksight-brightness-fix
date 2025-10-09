@@ -47,7 +47,7 @@ const [opacity, setOpacity] = useState(initialOpacity);
 
   useEffect(() => {
     const listener = (brightness: number) => {
-        setOpacity(Math.round((1 - brightness) * 100) / 100)
+        setOpacity(1 - brightness)
     };
 
     addEventListener("brightness_change", listener);
