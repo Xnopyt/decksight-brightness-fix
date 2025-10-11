@@ -1,6 +1,6 @@
 {
   "name": "decksight-brightness-fix",
-  "version": "1.2.1",
+  "version": "1.3.0",
   "description": "A plugin to fix the brightness slider on Steam Decks with the DeckSight OLED panel",
   "type": "module",
   "scripts": {
